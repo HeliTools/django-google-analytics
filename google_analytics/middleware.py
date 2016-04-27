@@ -1,3 +1,4 @@
+import os
 from django.conf import settings
 from google_analytics.utils import build_ga_params, set_cookie
 from google_analytics.tasks import send_ga_tracking
@@ -15,5 +16,8 @@ class GoogleAnalyticsMiddleware(object):
         referer = request.META.get('HTTP_REFERER', '')
         params = build_ga_params(request, path=path, referer=referer)
         response = set_cookie(params, response)
-        send_ga_tracking.delay(params)
+        if "bae" in os.path.dirname(__file__):
+            send_ga_tracking(params)
+        else:
+            send_ga_tracking.delay(params)
         return response
